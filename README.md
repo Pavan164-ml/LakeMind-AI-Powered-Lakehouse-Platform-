@@ -1,7 +1,5 @@
 # LakeMind-AI-Powered-Lakehouse-Platform
 
-# Lake Mind Project Guide
-
 ## 1. Project Summary
 
 Lake Mind is a fully local portfolio project that combines:
