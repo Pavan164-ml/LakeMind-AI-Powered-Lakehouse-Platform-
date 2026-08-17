@@ -50,25 +50,20 @@ The most important design rule is:
 
 ---
 
-## 3. System context: who uses the platform and what surrounds it
+## 3. System Context
 
 ```mermaid
 flowchart LR
-
-    DE[Data Engineer] -->|Develops / monitors| AIRFLOW[Airflow]
-    AIRFLOW -->|Orchestrates| INGEST[Data Ingestion]
-    INGEST -->|Loads| OLIST[Olist CSV Data]
-
-    OLIST -->|Structured Data| LM[Lake Mind]
-    DOCS[Synthetic Markdown Documents] -->|Unstructured Knowledge| LM
-
-    ANALYST[Analyst / BI User] -->|SQL / Data Exploration| LM
-    USER[Business / Chat User] -->|Natural-language Questions| LM
-
-    LM -->|LLM Requests| OLLAMA[Ollama / Phi-3.5]
-    LM -->|Answers / Tables / Citations / Charts| USERS[Users]
+    DE["Data Engineer"] -->|runs and monitors pipelines| LM["Lake Mind"]
+    ANALYST["Analyst / BI User"] -->|SQL and data exploration| LM
+    USER["Business / Chat User"] -->|natural-language questions| LM
+    OLIST["Olist CSV Dataset"] -->|structured source data| LM
+    DOCS["Synthetic Markdown Documents"] -->|policy and FAQ context| LM
+    LM -->|local model requests| OLLAMA["Ollama / phi3.5"]
+    LM -->|pipeline scheduling| AIRFLOW["Optional Airflow"]
+    LM -->|tables, answers, citations, charts| USERS["Users"]
 ```
- 
+
 ### External actors and systems
 
 **Data engineer**
