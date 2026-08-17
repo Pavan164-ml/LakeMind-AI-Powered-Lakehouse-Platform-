@@ -164,17 +164,8 @@ tracing, dependency health, alerting, and lineage are not yet implemented.
 
 ### 5.1 Medallion flow
 
-```mermaid
-flowchart LR
-    SRC[Source CSV] -->|schema inference and normalized columns| B[Bronze]
-    B -->|cast, clean, standardize, join| S[Silver]
-    S -->|business rules and dimensional modeling| F[Gold fact and dimensions]
-    S -->|aggregations and governed KPIs| K[Gold KPI tables]
-    F --> D[DuckDB views]
-    K --> D
-    D --> API[API / semantic query path]
-    D --> BI[Query UI / analyst SQL]
-```
+<img width="1880" height="836" alt="image" src="https://github.com/user-attachments/assets/0df96fb1-a33e-4a2e-a19b-5ac3d09a0dac" />
+
 
 ### 5.2 Bronze layer
 
@@ -270,28 +261,8 @@ a recommended improvement rather than a complete current guardrail.
 
 ### 5.5 Gold star design
 
-```mermaid
-erDiagram
-    DIM_DATE ||--o{ FACT_ORDER_ITEM : "date_key"
-    DIM_CUSTOMER ||--o{ FACT_ORDER_ITEM : "customer_unique_id"
-    DIM_PRODUCT ||--o{ FACT_ORDER_ITEM : "product_id"
-    DIM_SELLER ||--o{ FACT_ORDER_ITEM : "seller_id"
-    DIM_PAYMENT_TYPE ||--o{ FACT_ORDER_ITEM : "payment_type"
-    DIM_ORDER_STATUS ||--o{ FACT_ORDER_ITEM : "order_status"
+<img width="1402" height="1122" alt="image" src="https://github.com/user-attachments/assets/4378175f-eee8-4da4-a694-16cc9924a380" />
 
-    FACT_ORDER_ITEM {
-        string order_id
-        string order_item_id
-        string product_id
-        string seller_id
-        string customer_unique_id
-        int date_key
-        decimal allocated_payment_value
-        decimal freight_value
-        double review_score
-        double delivery_delay_days
-    }
-```
 
 The diagram is conceptual: inspect the transformation code and generated Parquet
 schema for exact physical types and nullable fields.
@@ -335,31 +306,8 @@ not provide. A good system should say "unsupported" rather than manufacture a pr
 
 ### 5.7 Ingestion sequence
 
-```mermaid
-sequenceDiagram
-    actor Operator
-    participant AF as Airflow or CLI
-    participant Spark as PySpark
-    participant Source as CSV files
-    participant Bronze as Bronze Parquet
-    participant Silver as Silver Parquet
-    participant Gold as Gold Parquet
-    participant Check as Validation
+<img width="1647" height="955" alt="image" src="https://github.com/user-attachments/assets/b8b64c25-ea2b-486a-a428-761ca1a974a8" />
 
-    Operator->>AF: Start batch
-    AF->>Spark: Run Bronze ingestion
-    Spark->>Source: Read CSVs
-    Spark->>Bronze: Write source-like Parquet
-    AF->>Check: Validate Bronze row counts
-    AF->>Spark: Run Silver transformations
-    Spark->>Bronze: Read Bronze
-    Spark->>Silver: Write typed and conformed data
-    AF->>Check: Validate Silver counts
-    AF->>Spark: Run Gold transformations
-    Spark->>Silver: Read Silver
-    Spark->>Gold: Write facts, dimensions, and KPIs
-    AF->>Check: Validate Gold and executive summary
-```
 
 ### 5.8 Current batch characteristics
 
@@ -491,21 +439,8 @@ The semantic layer protects metric meaning and SQL behavior.
 
 ### 7.6 Deterministic versus probabilistic boundary
 
-```mermaid
-flowchart LR
-    Q[Question] --> LLM_ROUTE["Probabilistic: LLM intent classification"]
-    Q --> ENTITY["Deterministic: alias and entity extraction"]
-    LLM_ROUTE --> GOVERN["Deterministic: route/table allowlist"]
-    ENTITY --> SQL["Deterministic: governed SQL builder"]
-    GOVERN --> SQL
-    SQL --> RESULT["Deterministic: DuckDB result"]
-    Q --> VECTOR["Probabilistic similarity: embedding retrieval"]
-    VECTOR --> CHUNKS[Retrieved evidence]
-    RESULT --> PROMPT[Grounded prompt]
-    CHUNKS --> PROMPT
-    PROMPT --> LLM_ANSWER["Probabilistic: answer wording"]
-    LLM_ANSWER --> RESPONSE[Answer plus evidence]
-```
+<img width="1690" height="931" alt="image" src="https://github.com/user-attachments/assets/50ba0ea6-15eb-4044-922c-320189a09209" />
+
 
 Important nuance: vector similarity is mathematically deterministic for fixed models,
 data, and settings, but relevance is semantic and approximate rather than a guaranteed
@@ -546,37 +481,11 @@ important latency and relevance improvements.
 
 ### RAG ingestion flow
 
-```mermaid
-flowchart LR
-    D[Markdown document] --> P[Parser]
-    P --> C[Section-aware chunks]
-    C --> M[Metadata enrichment]
-    M --> ID[Stable chunk ID]
-    ID --> E[Sentence-transformer embedding]
-    E --> V[(ChromaDB)]
-```
+
 
 ### RAG query flow
 
-```mermaid
-sequenceDiagram
-    actor User
-    participant API as FastAPI
-    participant Embed as Embedding model
-    participant Chroma as ChromaDB
-    participant Prompt as Prompt builder
-    participant Ollama as Ollama
-
-    User->>API: Ask document or hybrid question
-    API->>Embed: Embed question
-    Embed-->>API: Query vector
-    API->>Chroma: Similarity search top-k
-    Chroma-->>API: Chunks, metadata, distances
-    API->>Prompt: Combine question and retrieved evidence
-    Prompt->>Ollama: Grounded generation request
-    Ollama-->>API: Natural-language answer
-    API-->>User: Answer plus retrieved chunks and sources
-```
+<img width="1024" height="559" alt="image" src="https://github.com/user-attachments/assets/6c79d45e-477d-45a3-84f6-567b52f0fcfe" />
 
 ### Chunking tradeoffs
 
