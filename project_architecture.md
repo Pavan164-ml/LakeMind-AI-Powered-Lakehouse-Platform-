@@ -52,15 +52,8 @@ The most important design rule is:
 
 ## 3. System Context
 
-flowchart LR
-    DE["Data Engineer"] -->|runs and monitors pipelines| LM["Lake Mind"]
-    ANALYST["Analyst BI User"] -->|SQL and data exploration| LM
-    USER["Business Chat User"] -->|natural-language questions| LM
-    OLIST["Olist CSV Dataset"] -->|structured source data| LM
-    DOCS["Synthetic Markdown Documents"] -->|policy and FAQ context| LM
-    LM -->|local model requests| OLLAMA["Ollama phi3.5"]
-    LM -->|pipeline scheduling| AIRFLOW["Optional Airflow"]
-    LM -->|tables answers citations charts| USERS["Users"]
+<img width="1172" height="566" alt="image" src="https://github.com/user-attachments/assets/2e7d76b3-1ebb-45c7-b68c-3b8d42f7e04d" />
+
 
 ### External actors and systems
 
@@ -109,80 +102,10 @@ flowchart LR
 ---
 
 ## 4. High-level block architecture
+<img width="1185" height="303" alt="image" src="https://github.com/user-attachments/assets/c869420b-39eb-4b22-910e-e43e6ccaaad0" />
 
-```mermaid
-flowchart TB
-    subgraph Sources["1. Source systems"]
-        CSV[Olist CSV files]
-        MD[Markdown knowledge documents]
-    end
-
-    subgraph Processing["2. Processing and curation"]
-        INGEST[PySpark CSV ingestion]
-        BRONZE[(Bronze Parquet)]
-        SILVER_JOB[PySpark cleaning and conformance]
-        SILVER[(Silver Parquet)]
-        GOLD_JOB[PySpark dimensional and KPI modeling]
-        GOLD[(Gold Parquet)]
-        DOC_INGEST[Document parsing, chunking, and embedding]
-    end
-
-    subgraph Storage["3. Query and retrieval storage"]
-        DUCK[DuckDB views over Parquet]
-        CHROMA[(ChromaDB vectors and metadata)]
-    end
-
-    subgraph Intelligence["4. Governed intelligence"]
-        ROUTER[Question router]
-        ENTITIES[Entity resolver]
-        SEMANTIC[Semantic catalog]
-        SQL_BUILDER[Approved and dynamic SQL builders]
-        RETRIEVER[Semantic document retriever]
-        ANSWER[Grounded answer composer]
-        OLLAMA[Ollama phi3.5]
-    end
-
-    subgraph Serving["5. Serving and experience"]
-        API[FastAPI]
-        QUERY_UI[Streamlit query UI]
-        CHAT_UI[Streamlit chatbot UI]
-    end
-
-    subgraph Operations["6. Operations"]
-        CONFIG[YAML configuration and environment overrides]
-        AF[Airflow DAGs]
-        LOGS[Application and Airflow logs]
-    end
-
-    CSV --> INGEST --> BRONZE --> SILVER_JOB --> SILVER --> GOLD_JOB --> GOLD
-    MD --> DOC_INGEST --> CHROMA
-    BRONZE --> DUCK
-    SILVER --> DUCK
-    GOLD --> DUCK
-
-    API --> ROUTER
-    ROUTER --> OLLAMA
-    ROUTER --> ENTITIES
-    ENTITIES --> SQL_BUILDER
-    SEMANTIC --> ROUTER
-    SEMANTIC --> SQL_BUILDER
-    SQL_BUILDER --> DUCK
-    ROUTER --> RETRIEVER --> CHROMA
-    DUCK --> ANSWER
-    CHROMA --> ANSWER
-    ANSWER --> OLLAMA
-    OLLAMA --> API
-
-    QUERY_UI --> DUCK
-    CHAT_UI --> API
-    CONFIG -.configures.-> Processing
-    CONFIG -.configures.-> Storage
-    AF -.orchestrates.-> INGEST
-    AF -.orchestrates.-> SILVER_JOB
-    AF -.orchestrates.-> GOLD_JOB
-    API -.writes.-> LOGS
-    AF -.writes.-> LOGS
-```
+## 4.a Detailed architecture
+<img width="1536" height="1024" alt="image" src="https://github.com/user-attachments/assets/9ff9d30a-98cb-4bda-920c-6f01efe60351" />
 
 ### Block 1: source systems
 
