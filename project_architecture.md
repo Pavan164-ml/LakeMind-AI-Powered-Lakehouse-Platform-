@@ -1,4 +1,4 @@
-# Lake Mind Architecture, Design, and Interview Guide
+<img width="1024" height="559" alt="image" src="https://github.com/user-attachments/assets/bc6cd4b4-1542-457c-9c6e-a6a04a3d72f0" /># Lake Mind Architecture, Design, and Interview Guide
 
 ## 1. Purpose and audience
 
@@ -481,11 +481,13 @@ important latency and relevance improvements.
 
 ### RAG ingestion flow
 
+<img width="1024" height="559" alt="image" src="https://github.com/user-attachments/assets/6c79d45e-477d-45a3-84f6-567b52f0fcfe" />
 
 
 ### RAG query flow
 
-<img width="1024" height="559" alt="image" src="https://github.com/user-attachments/assets/6c79d45e-477d-45a3-84f6-567b52f0fcfe" />
+<img width="1024" height="559" alt="image" src="https://github.com/user-attachments/assets/9affdc9a-1448-4e09-bec4-7a0d1510b9e2" />
+
 
 ### Chunking tradeoffs
 
